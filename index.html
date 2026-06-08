@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>media consulting TEGISCHER – Online-Marketing Experte</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -1470,59 +1470,11 @@
       document.body.style.overflow = '';
     }
 
-    function handleModalSubmit(e, form) {
-      e.preventDefault();
-      form.querySelector('button[type=submit]').disabled = true;
-      setTimeout(() => {
-        form.reset();
-        form.querySelector('.modal-success').classList.remove('hidden');
-        form.querySelector('button[type=submit]').disabled = false;
-        setTimeout(() => closeModal(), 2500);
-      }, 600);
-    }
-
     // ═══════════════════════════════════════════════════════════════════
-    // EMAILJS – Auto-Reply Konfiguration
-    // ───────────────────────────────────────────────────────────────────
-    // 1. Kostenloses Konto: https://www.emailjs.com (200 E-Mails/Monat)
-    // 2. E-Mail-Dienst verbinden (Gmail, Outlook oder SMTP)
-    // 3. Zwei Templates anlegen – Vorlagen als Kommentar unten
-    // 4. Die vier IDs hier eintragen und speichern → Auto-Reply aktiv
+    // FORMSUBMIT.CO – Kein Konto · Keine API-Keys · Sofort aktiv
     // ═══════════════════════════════════════════════════════════════════
-    const EJ_KEY     = 'IHR_PUBLIC_KEY';       // Account → API Keys → Public Key
-    const EJ_SERVICE = 'IHR_SERVICE_ID';       // Email Services → Service ID
-    const EJ_NOTIFY  = 'template_notify';      // Template 1 – Benachrichtigung an Sie
-    const EJ_REPLY   = 'template_autoreply';   // Template 2 – Auto-Reply an den User
 
-    emailjs.init(EJ_KEY);
-
-    /*
-    ────────────────────────────────────────────────────────────────────
-    TEMPLATE 1 „template_notify"  →  Benachrichtigung an Christian
-    Subject : Neue {{form_label}} von {{from_name}}
-    To email: office@tegischer-consulting.at
-    Body HTML:
-      <h2 style="color:#0284c7">📬 Neue {{form_label}}</h2>
-      <p><b>Name:</b> {{from_name}}</p>
-      <p><b>E-Mail:</b> <a href="mailto:{{from_email}}">{{from_email}}</a></p>
-      <hr/>
-      <div style="background:#f8fafc;padding:16px;border-radius:8px">{{details}}</div>
-      <p style="font-size:11px;color:#94a3b8">Gesendet via tegischer-consulting.at</p>
-    ────────────────────────────────────────────────────────────────────
-    TEMPLATE 2 „template_autoreply"  →  Auto-Reply an den User
-    To email: {{to_email}}
-    To name : {{to_name}}
-    Subject : {{reply_subject}}
-    Body HTML:
-      {{reply_body}}
-      <p style="color:#64748b;font-size:12px;border-top:1px solid #e2e8f0;padding-top:12px;margin-top:24px">
-        media consulting TEGISCHER · Franz von Defregger Straße 14a · 9900 Lienz<br>
-        Tel: +43 699 18144735 · office@tegischer-consulting.at
-      </p>
-    ────────────────────────────────────────────────────────────────────
-    */
-
-    // Feldnamen je Formular – werden den Inputs automatisch zugewiesen
+    // Feldnamen je Formular
     const FORM_FIELDS = {
       'modal-erstgespraech': ['vorname','nachname','email','telefon','thema','nachricht'],
       'modal-webanalyse':    ['vorname','nachname','email','website','analyse_bereich','analytics','nachricht'],
@@ -1561,124 +1513,23 @@
       return (rows[id]||[]).filter(([,val])=>val).map(([k,val])=>`<p><b>${k}:</b> ${val}</p>`).join('');
     }
 
-    // Auto-Reply Inhalte – individuell je Formular
+    // Auto-Reply Texte (plain text für Formsubmit)
     function getAutoReply(id, v) {
       const n   = v.vorname || 'Interessent/in';
-      const sig = `<p style="margin-top:28px">Herzliche Grüße,<br><b>Christian Tegischer</b><br>
-                   <span style="color:#0284c7">media consulting TEGISCHER</span></p>`;
+      const sig = '\n\nHerzliche Grüße,\nChristian Tegischer\nmedia consulting TEGISCHER\n+43 699 18144735 · office@tegischer-consulting.at';
 
       const map = {
-        'modal-erstgespraech': {
-          subject: `Ihre Anfrage ist angekommen, ${n}! 🎯`,
-          body: `<p>Hallo ${n},</p>
-<p>vielen Dank für Ihre Anfrage! Ich habe sie erhalten und melde mich <b>persönlich innerhalb von 24 Stunden</b> bei Ihnen.</p>
-<p><b>Ihr gewähltes Thema:</b> ${v.thema||'–'}</p>
-<p><b>So bereiten Sie sich optimal auf unser Gespräch vor:</b></p>
-<ul style="padding-left:20px">
-  <li>Notieren Sie Ihr wichtigstes Online-Marketing-Ziel für die nächsten 6 Monate</li>
-  <li>Überlegen Sie, was online bereits gut läuft – und wo der Schuh drückt</li>
-  <li>Haben Sie Mitbewerber, von denen Sie sich etwas abschauen möchten?</li>
-</ul>
-<p>Das hilft uns, das Erstgespräch von Anfang an konkret und effizient zu gestalten – ohne Umwege direkt zum Punkt.</p>
-${sig}`,
-        },
-
-        'modal-webanalyse': {
-          subject: `Ihre Webanalyse-Anfrage – so geht es weiter, ${n} 📊`,
-          body: `<p>Hallo ${n},</p>
-<p>danke für Ihre Webanalyse-Anfrage! Daten lügen nicht – und genau das werden wir uns zunutze machen.</p>
-<p><b>Fokus der Analyse:</b> ${v.analyse_bereich||'Vollständige Analyse'}<br>
-<b>Google Analytics vorhanden:</b> ${v.analytics||'–'}</p>
-<p><b>Mein Vorgehen für Sie:</b></p>
-<ol style="padding-left:20px">
-  <li>Ich sichte Ihre Website und bereite die Analyse strukturiert vor</li>
-  <li>Falls Google Analytics noch fehlt, richte ich es im Rahmen der Analyse ein</li>
-  <li>Sie erhalten einen klaren Report: was funktioniert, was nicht – und warum</li>
-  <li>Konkrete Optimierungsmaßnahmen mit Prioritäten, damit Sie wissen, womit Sie anfangen</li>
-</ol>
-<p><b>Tipp vorab:</b> Überlegen Sie, welche Aktion Besucher auf Ihrer Website primär ausführen sollen (Anfrage, Kauf, Anruf). Das ist der Dreh- und Angelpunkt jeder guten Webanalyse.</p>
-<p>Ich melde mich innerhalb von <b>24 Stunden</b> mit den nächsten Schritten.</p>${sig}`,
-        },
-
-        'modal-konzeption': {
-          subject: `Ihre Konzeptionsanfrage – auf dem Weg zur perfekten Website, ${n} 🚀`,
-          body: `<p>Hallo ${n},</p>
-<p>danke für Ihre Konzeptionsanfrage! Eine durchdachte Web-Konzeption ist das Fundament, auf dem alles andere aufbaut – Sie haben den richtigen ersten Schritt gemacht.</p>
-<p><b>Ihr Projekt:</b> ${v.projekt_art||'–'} bei ${v.unternehmen||'Ihrem Unternehmen'}<br>
-<b>Ziel:</b> ${v.projekt_ziel||'–'} · <b>Zeitraum:</b> ${v.zeitraum||'–'}</p>
-<p><b>Zur optimalen Vorbereitung unseres Gesprächs:</b></p>
-<ul style="padding-left:20px">
-  <li>Sammeln Sie 3–5 Websites, die Ihnen optisch oder inhaltlich gefallen</li>
-  <li>Wer ist Ihre wichtigste Zielgruppe – und was sucht sie?</li>
-  <li>Was soll ein Besucher als Allererstes auf Ihrer Seite wahrnehmen?</li>
-  <li>Haben Sie bereits Texte, Fotos oder ein Corporate Design?</li>
-</ul>
-<p>Diese Antworten sparen uns in der Konzeptionsphase wertvolle Zeit – und Ihnen Geld.</p>
-<p>Ich melde mich innerhalb von <b>24 Stunden</b>, um alle Details zu besprechen.</p>${sig}`,
-        },
-
-        'modal-sem': {
-          subject: `Ihre Google Ads Anfrage – Ihre Kampagne ist in guten Händen, ${n} 📈`,
-          body: `<p>Hallo ${n},</p>
-<p>danke für Ihre Anfrage! Google Ads ist einer der direktesten Wege, um sofort die richtigen Kunden zu erreichen – mit der richtigen Strategie holen Sie das Maximum aus Ihrem Budget.</p>
-<p><b>Ihr Kampagnenziel:</b> ${v.kampagnen_ziel||'–'}<br>
-<b>Monatliches Budget:</b> ${v.budget||'–'}<br>
-<b>Bisherige Erfahrung:</b> ${v.ads_erfahrung||'–'}</p>
-<p><b>Was ich für Ihre Kampagne tun werde:</b></p>
-<ol style="padding-left:20px">
-  <li><b>Keyword-Recherche:</b> Die Begriffe, die Ihre Kunden wirklich eingeben</li>
-  <li><b>Kampagnenstruktur:</b> Aufbau für maximale Relevanz, minimale Streuverluste</li>
-  <li><b>Anzeigentexte:</b> Klar, überzeugend, auf Ihre Zielgruppe zugeschnitten</li>
-  <li><b>Laufendes Monitoring:</b> Tägliche Kontrolle, wöchentliche Optimierung, volle Transparenz</li>
-</ol>
-<p><b>Merke:</b> Mit Google Ads zahlen Sie ausschließlich für echte Klicks. Kein Klick = keine Kosten. Das macht das Budget planbar und jederzeit kontrollierbar.</p>
-<p>Ich melde mich innerhalb von <b>24 Stunden</b> mit einem konkreten Vorschlag für Ihre Kampagne.</p>${sig}`,
-        },
-
-        'modal-seo': {
-          subject: `Ihre SEO-Anfrage – nachhaltig besser ranken. Los geht's, ${n}! 🔍`,
-          body: `<p>Hallo ${n},</p>
-<p>danke für Ihre SEO-Anfrage! SEO ist kein Sprint, sondern ein Marathon – doch die Investition zahlt sich aus: organischer Traffic kommt ganz ohne laufende Werbekosten.</p>
-<p><b>Aktuelle Sichtbarkeit:</b> ${v.sichtbarkeit||'–'}<br>
-<b>Ihr SEO-Ziel:</b> ${v.seo_ziel||'–'}<br>
-<b>Gewünschter Zeitrahmen:</b> ${v.zeitrahmen||'–'}</p>
-<p><b>Mein SEO-Prozess – Schritt für Schritt:</b></p>
-<ol style="padding-left:20px">
-  <li><b>Analyse:</b> Technischer Audit, aktuelle Rankings, Wettbewerber-Check</li>
-  <li><b>Strategie:</b> Keyword-Plan, Prioritätenliste, konkreter Maßnahmenplan</li>
-  <li><b>Umsetzung:</b> On-Page, Off-Page, technische Optimierung und Content</li>
-  <li><b>Reporting:</b> Monatliche Reports mit klaren Kennzahlen – kein Fachchinesisch</li>
-</ol>
-<p><b>Realistische Erwartung:</b> Erste messbare Verbesserungen sind typischerweise nach 3–6 Monaten sichtbar. Je nach Ausgangssituation auch früher. Langfristig ist SEO der kosteneffizienteste Online-Kanal.</p>
-<p>Ich melde mich innerhalb von <b>24 Stunden</b> für ein erstes Strategie-Gespräch.</p>${sig}`,
-        },
-
-        'modal-ki': {
-          subject: `Ihre KI-Beratungsanfrage – die Zukunft wartet schon, ${n} 🤖`,
-          body: `<p>Hallo ${n},</p>
-<p>danke für Ihr Interesse an KI im Marketing! Die KI-Landschaft entwickelt sich in einem atemberaubenden Tempo – wer jetzt klug einsteigt, verschafft sich einen nachhaltigen Wettbewerbsvorteil.</p>
-<p><b>Ihr Unternehmen:</b> ${v.unternehmensgroesse||'–'}<br>
-<b>Interessante KI-Anwendung:</b> ${v.ki_anwendung||'–'}<br>
-<b>Aktuelle Tools:</b> ${v.tools||'–'}</p>
-<p><b>Was wir gemeinsam herausarbeiten werden:</b></p>
-<ul style="padding-left:20px">
-  <li>Welche KI-Tools wirklich zu Ihrem Business passen – ohne Overengineering</li>
-  <li>Wo KI bei Ihnen sofort messbar Zeit und Geld einspart</li>
-  <li>Wie Sie KI-Inhalte Google-konform und qualitativ hochwertig einsetzen</li>
-  <li>Welche Risiken (Datenschutz, Bias, Qualität) Sie kennen und aktiv vermeiden sollten</li>
-</ul>
-<p><b>Gut zu wissen:</b> Viele der leistungsstärksten KI-Marketing-Tools erfordern <em>keine</em> Programmierkenntnisse. Sie lassen sich intuitiv bedienen und nahtlos in bestehende Abläufe integrieren.</p>
-<p>Ich melde mich innerhalb von <b>24 Stunden</b> für ein erstes Beratungsgespräch.</p>${sig}`,
-        },
+        'modal-erstgespraech': `Hallo ${n},\n\nvielen Dank für Ihre Anfrage! Ich melde mich persönlich innerhalb von 24 Stunden.\n\nTipp zur Vorbereitung:\n• Notieren Sie Ihr wichtigstes Online-Marketing-Ziel für die nächsten 6 Monate\n• Überlegen Sie, was online gut läuft – und wo der Schuh drückt${sig}`,
+        'modal-webanalyse':    `Hallo ${n},\n\ndanke für Ihre Webanalyse-Anfrage! Ich sichte Ihre Website, bereite die Analyse strukturiert vor und melde mich innerhalb von 24 Stunden mit konkreten nächsten Schritten.${sig}`,
+        'modal-konzeption':    `Hallo ${n},\n\ndanke für Ihre Konzeptionsanfrage! Sammeln Sie zur Vorbereitung 3–5 Websites, die Ihnen gefallen, und überlegen Sie, wer Ihre wichtigste Zielgruppe ist. Ich melde mich innerhalb von 24 Stunden.${sig}`,
+        'modal-sem':           `Hallo ${n},\n\ndanke für Ihre Google Ads Anfrage! Mit der richtigen Strategie holen Sie das Maximum aus Ihrem Budget. Ich melde mich innerhalb von 24 Stunden mit einem konkreten Kampagnenvorschlag.${sig}`,
+        'modal-seo':           `Hallo ${n},\n\ndanke für Ihre SEO-Anfrage! SEO ist kein Sprint, sondern ein Marathon – doch die Investition zahlt sich langfristig aus. Ich melde mich innerhalb von 24 Stunden für ein erstes Strategie-Gespräch.${sig}`,
+        'modal-ki':            `Hallo ${n},\n\ndanke für Ihr Interesse an KI im Marketing! Ich zeige Ihnen, welche KI-Tools wirklich zu Ihrem Business passen. Ich melde mich innerhalb von 24 Stunden.${sig}`,
       };
-
-      return map[id] || {
-        subject: `Ihre Anfrage ist angekommen, ${n}!`,
-        body: `<p>Hallo ${n},</p><p>vielen Dank für Ihre Anfrage. Ich melde mich innerhalb von 24 Stunden persönlich bei Ihnen.</p>${sig}`,
-      };
+      return map[id] || `Hallo ${n},\n\nvielen Dank für Ihre Anfrage. Ich melde mich innerhalb von 24 Stunden persönlich bei Ihnen.${sig}`;
     }
 
-    // Formular absenden via EmailJS
+    // Formular absenden via Formsubmit.co
     async function handleModalSubmit(e, form) {
       e.preventDefault();
       const id      = form.closest('.modal-panel').id;
@@ -1689,47 +1540,51 @@ ${sig}`,
       btn.disabled    = true;
       btn.textContent = 'Wird gesendet …';
 
-      // Feldwerte einlesen
       const v = {};
       form.querySelectorAll('[name]').forEach(el => { v[el.name] = el.value.trim(); });
-      const fullName  = [v.vorname, v.nachname].filter(Boolean).join(' ');
-      const autoReply = getAutoReply(id, v);
+      const fullName = [v.vorname, v.nachname].filter(Boolean).join(' ');
+
+      const labels = {
+        telefon:'Telefon', thema:'Thema', nachricht:'Nachricht',
+        website:'Website', analyse_bereich:'Analyse-Bereich', analytics:'Analytics vorhanden',
+        unternehmen:'Unternehmen', projekt_art:'Projekt-Art', projekt_ziel:'Projekt-Ziel', zeitraum:'Zeitraum',
+        budget:'Budget/Monat', kampagnen_ziel:'Kampagnenziel', ads_erfahrung:'Ads-Erfahrung',
+        sichtbarkeit:'Aktuelle Sichtbarkeit', seo_ziel:'SEO-Ziel', zeitrahmen:'Zeitrahmen',
+        unternehmensgroesse:'Unternehmensgröße', ki_anwendung:'KI-Anwendung', tools:'Aktuelle Tools',
+      };
+
+      const fd = new FormData();
+      fd.append('_subject',      `📬 Neue ${getFormLabel(id)} von ${fullName}`);
+      fd.append('_replyto',      v.email);
+      fd.append('_autoresponse', getAutoReply(id, v));
+      fd.append('_template',     'box');
+      fd.append('_captcha',      'false');
+      fd.append('Name',          fullName);
+      fd.append('E-Mail',        v.email);
+      fd.append('Formular',      getFormLabel(id));
+      Object.entries(v).forEach(([k, val]) => {
+        if (val && !['vorname','nachname','email'].includes(k))
+          fd.append(labels[k] || k, val);
+      });
 
       try {
-        // 1 · Benachrichtigung an Christian
-        await emailjs.send(EJ_SERVICE, EJ_NOTIFY, {
-          form_label: getFormLabel(id),
-          from_name:  fullName,
-          from_email: v.email,
-          to_email:   'office@tegischer-consulting.at',
-          details:    buildDetails(id, v),
+        const res  = await fetch('https://formsubmit.co/ajax/office@tegischer-consulting.at', {
+          method: 'POST', headers: { Accept: 'application/json' }, body: fd,
         });
-
-        // 2 · Auto-Reply an den User
-        await emailjs.send(EJ_SERVICE, EJ_REPLY, {
-          to_name:       v.vorname,
-          to_email:      v.email,
-          reply_subject: autoReply.subject,
-          reply_body:    autoReply.body,
-        });
-
-        success.classList.remove('hidden');
-        form.reset();
-        setTimeout(() => closeModal(), 3500);
-
+        const data = await res.json();
+        if (data.success === 'true' || data.success === true) {
+          success.classList.remove('hidden');
+          form.reset();
+          setTimeout(() => closeModal(), 3500);
+        } else { throw new Error(data.message); }
       } catch (err) {
-        console.error('EmailJS:', err);
-        btn.textContent = '⚠ Fehler – bitte direkt mailen: office@tegischer-consulting.at';
+        console.error('Formsubmit:', err);
+        btn.textContent   = '⚠ Fehler – bitte direkt mailen: office@tegischer-consulting.at';
         btn.style.background = '#dc2626';
-        setTimeout(() => {
-          btn.textContent  = origTxt;
-          btn.style.background = '';
-          btn.disabled     = false;
-        }, 5000);
+        setTimeout(() => { btn.textContent = origTxt; btn.style.background = ''; btn.disabled = false; }, 5000);
         return;
       }
-
-      btn.disabled    = false;
+      btn.disabled = false;
       btn.textContent = origTxt;
     }
 
