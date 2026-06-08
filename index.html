@@ -1582,8 +1582,8 @@
       addField('_template',     'box');
       addField('_captcha',      'false');
       addField('_next',         'https://ctegischer-cmyk.github.io/tegischer-consulting-website/');
-      addField('Name',          fullName);
-      addField('E-Mail',        v.email);
+      addField('name',          fullName);
+      addField('email',         v.email);
       addField('Formular',      getFormLabel(id));
       Object.entries(v).forEach(([k, val]) => {
         if (val && !['vorname','nachname','email'].includes(k))
