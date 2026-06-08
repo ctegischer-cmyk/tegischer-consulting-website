@@ -1513,29 +1513,87 @@
       return (rows[id]||[]).filter(([,val])=>val).map(([k,val])=>`<p><b>${k}:</b> ${val}</p>`).join('');
     }
 
-    // Auto-Reply Texte (plain text für Formsubmit)
-    function getAutoReply(id, v) {
-      const n   = v.vorname || 'Interessent/in';
-      const sig = '\n\nHerzliche Grüße,\nChristian Tegischer\nmedia consulting TEGISCHER\n+43 699 18144735 · office@tegischer-consulting.at';
+    // Bestätigungs-Inhalt – wird direkt im Modal angezeigt (strukturiert pro Formular)
+    function getSuccessContent(id, v) {
+      const n = v.vorname || 'Interessent/in';
 
       const map = {
-        'modal-erstgespraech': `Hallo ${n},\n\nvielen Dank für Ihre Anfrage! Ich melde mich persönlich innerhalb von 24 Stunden.\n\nTipp zur Vorbereitung:\n• Notieren Sie Ihr wichtigstes Online-Marketing-Ziel für die nächsten 6 Monate\n• Überlegen Sie, was online gut läuft – und wo der Schuh drückt${sig}`,
-        'modal-webanalyse':    `Hallo ${n},\n\ndanke für Ihre Webanalyse-Anfrage! Ich sichte Ihre Website, bereite die Analyse strukturiert vor und melde mich innerhalb von 24 Stunden mit konkreten nächsten Schritten.${sig}`,
-        'modal-konzeption':    `Hallo ${n},\n\ndanke für Ihre Konzeptionsanfrage! Sammeln Sie zur Vorbereitung 3–5 Websites, die Ihnen gefallen, und überlegen Sie, wer Ihre wichtigste Zielgruppe ist. Ich melde mich innerhalb von 24 Stunden.${sig}`,
-        'modal-sem':           `Hallo ${n},\n\ndanke für Ihre Google Ads Anfrage! Mit der richtigen Strategie holen Sie das Maximum aus Ihrem Budget. Ich melde mich innerhalb von 24 Stunden mit einem konkreten Kampagnenvorschlag.${sig}`,
-        'modal-seo':           `Hallo ${n},\n\ndanke für Ihre SEO-Anfrage! SEO ist kein Sprint, sondern ein Marathon – doch die Investition zahlt sich langfristig aus. Ich melde mich innerhalb von 24 Stunden für ein erstes Strategie-Gespräch.${sig}`,
-        'modal-ki':            `Hallo ${n},\n\ndanke für Ihr Interesse an KI im Marketing! Ich zeige Ihnen, welche KI-Tools wirklich zu Ihrem Business passen. Ich melde mich innerhalb von 24 Stunden.${sig}`,
+        'modal-erstgespraech': {
+          headline: `Vielen Dank, ${n}!`,
+          intro:    'Ihre Anfrage ist bei mir angekommen. Ich melde mich persönlich innerhalb von 24 Stunden bei Ihnen.',
+          tipsLabel:'So bereiten Sie sich optimal auf unser Gespräch vor:',
+          tips: [
+            'Notieren Sie Ihr wichtigstes Online-Marketing-Ziel für die nächsten 6 Monate',
+            'Überlegen Sie, was online bereits gut läuft – und wo der Schuh drückt',
+            'Haben Sie Mitbewerber, von denen Sie sich etwas abschauen möchten?'
+          ],
+        },
+        'modal-webanalyse': {
+          headline: `Vielen Dank, ${n}!`,
+          intro:    'Daten lügen nicht – und genau das werden wir uns zunutze machen. Ich melde mich innerhalb von 24 Stunden mit den nächsten Schritten.',
+          tipsLabel:'Mein Vorgehen für Sie:',
+          tips: [
+            'Ich sichte Ihre Website und bereite die Analyse strukturiert vor',
+            'Falls Google Analytics noch fehlt, richte ich es im Rahmen der Analyse ein',
+            'Sie erhalten einen klaren Report mit konkreten Optimierungsmaßnahmen'
+          ],
+        },
+        'modal-konzeption': {
+          headline: `Vielen Dank, ${n}!`,
+          intro:    'Eine durchdachte Konzeption ist das Fundament, auf dem alles aufbaut. Ich melde mich innerhalb von 24 Stunden.',
+          tipsLabel:'Zur Vorbereitung unseres Gesprächs:',
+          tips: [
+            'Sammeln Sie 3–5 Websites, die Ihnen optisch oder inhaltlich gefallen',
+            'Wer ist Ihre wichtigste Zielgruppe – und was sucht sie?',
+            'Haben Sie bereits Texte, Fotos oder ein Corporate Design?'
+          ],
+        },
+        'modal-sem': {
+          headline: `Vielen Dank, ${n}!`,
+          intro:    'Mit der richtigen Strategie holen Sie das Maximum aus Ihrem Budget. Ich melde mich innerhalb von 24 Stunden mit einem konkreten Kampagnenvorschlag.',
+          tipsLabel:'Was ich für Ihre Kampagne tun werde:',
+          tips: [
+            'Keyword-Recherche – die Begriffe, die Ihre Kunden wirklich eingeben',
+            'Kampagnenstruktur für maximale Relevanz und minimale Streuverluste',
+            'Laufendes Monitoring mit voller Transparenz'
+          ],
+        },
+        'modal-seo': {
+          headline: `Vielen Dank, ${n}!`,
+          intro:    'SEO ist kein Sprint, sondern ein Marathon – doch die Investition zahlt sich aus. Ich melde mich innerhalb von 24 Stunden für ein erstes Strategie-Gespräch.',
+          tipsLabel:'Mein SEO-Prozess:',
+          tips: [
+            'Analyse: Technischer Audit, aktuelle Rankings, Wettbewerber-Check',
+            'Strategie: Keyword-Plan und konkreter Maßnahmenplan',
+            'Reporting: Monatliche Reports mit klaren Kennzahlen'
+          ],
+        },
+        'modal-ki': {
+          headline: `Vielen Dank, ${n}!`,
+          intro:    'Die KI-Landschaft entwickelt sich rasant – wer jetzt klug einsteigt, verschafft sich einen nachhaltigen Wettbewerbsvorteil. Ich melde mich innerhalb von 24 Stunden.',
+          tipsLabel:'Was wir gemeinsam herausarbeiten werden:',
+          tips: [
+            'Welche KI-Tools wirklich zu Ihrem Business passen',
+            'Wo KI bei Ihnen sofort messbar Zeit und Geld einspart',
+            'Welche Risiken Sie kennen und aktiv vermeiden sollten'
+          ],
+        },
       };
-      return map[id] || `Hallo ${n},\n\nvielen Dank für Ihre Anfrage. Ich melde mich innerhalb von 24 Stunden persönlich bei Ihnen.${sig}`;
+
+      return map[id] || {
+        headline: `Vielen Dank, ${n}!`,
+        intro:    'Ihre Anfrage ist bei mir angekommen. Ich melde mich innerhalb von 24 Stunden persönlich bei Ihnen.',
+        tipsLabel:'',
+        tips:     []
+      };
     }
 
-    // Formular via Standard-POST in verstecktem iframe (umgeht Aktivierungs-Schleife)
+    // Formular via Standard-POST in verstecktem iframe + individueller Erfolgs-Dialog
     function handleModalSubmit(e, form) {
       e.preventDefault();
-      const id      = form.closest('.modal-panel').id;
-      const btn     = form.querySelector('button[type=submit]');
-      const success = form.querySelector('.modal-success');
-      const origTxt = btn.textContent;
+      const modalPanel = form.closest('.modal-panel');
+      const id         = modalPanel.id;
+      const btn        = form.querySelector('button[type=submit]');
 
       btn.disabled    = true;
       btn.textContent = 'Wird gesendet …';
@@ -1576,15 +1634,14 @@
         tmpForm.appendChild(inp);
       }
 
-      addField('_subject',      `📬 Neue ${getFormLabel(id)} von ${fullName}`);
-      addField('_replyto',      v.email);
-      addField('_autoresponse', getAutoReply(id, v));
-      addField('_template',     'box');
-      addField('_captcha',      'false');
-      addField('_next',         'https://ctegischer-cmyk.github.io/tegischer-consulting-website/');
-      addField('name',          fullName);
-      addField('email',         v.email);
-      addField('Formular',      getFormLabel(id));
+      addField('_subject',  `📬 Neue ${getFormLabel(id)} von ${fullName}`);
+      addField('_replyto',  v.email);
+      addField('_template', 'box');
+      addField('_captcha',  'false');
+      addField('_next',     'https://ctegischer-cmyk.github.io/tegischer-consulting-website/');
+      addField('name',      fullName);
+      addField('email',     v.email);
+      addField('Formular',  getFormLabel(id));
       Object.entries(v).forEach(([k, val]) => {
         if (val && !['vorname','nachname','email'].includes(k))
           addField(labels[k] || k, val);
@@ -1593,15 +1650,54 @@
       document.body.appendChild(tmpForm);
       tmpForm.submit();
 
-      // Erfolg sofort anzeigen (Formsubmit antwortet im iframe, sichtbar wird das nicht)
+      // Modal-Inhalt durch individuellen Erfolgs-Dialog ersetzen
       setTimeout(() => {
         document.body.removeChild(tmpForm);
-        success.classList.remove('hidden');
-        form.reset();
-        btn.disabled = false;
-        btn.textContent = origTxt;
-        setTimeout(() => closeModal(), 3500);
-      }, 800);
+        showSuccessScreen(modalPanel, id, v);
+      }, 600);
+    }
+
+    // Zeigt den Erfolgs-Bildschirm im Modal
+    function showSuccessScreen(modalPanel, id, v) {
+      const c = getSuccessContent(id, v);
+      const tipsHTML = c.tips.length
+        ? `<div class="bg-brand-50 border border-brand-100 rounded-2xl p-5 text-left">
+             <p class="font-semibold text-brand-700 text-sm mb-3">${c.tipsLabel}</p>
+             <ul class="space-y-2">
+               ${c.tips.map(t => `
+                 <li class="flex items-start gap-2 text-sm text-slate-700">
+                   <svg class="w-4 h-4 text-brand-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                   <span>${t}</span>
+                 </li>`).join('')}
+             </ul>
+           </div>` : '';
+
+      modalPanel.innerHTML = `
+        <div class="bg-gradient-to-r from-emerald-500 to-brand-600 p-6 rounded-t-3xl flex items-start justify-between">
+          <div>
+            <p class="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1">Anfrage erhalten</p>
+            <h3 class="text-white text-xl font-bold">${c.headline}</h3>
+          </div>
+          <button onclick="closeModal()" class="text-white/80 hover:text-white transition-colors ml-4 shrink-0" aria-label="Schließen">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="p-8 text-center">
+          <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
+            <svg class="w-9 h-9 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <p class="text-slate-600 leading-relaxed mb-6">${c.intro}</p>
+          ${tipsHTML}
+          <div class="mt-6 pt-6 border-t border-slate-100 text-xs text-slate-400">
+            Bei dringenden Anliegen: <a href="tel:+436991814735" class="text-brand-600 font-medium hover:underline">+43 699 18144735</a>
+            &nbsp;·&nbsp;
+            <a href="mailto:office@tegischer-consulting.at" class="text-brand-600 font-medium hover:underline">office@tegischer-consulting.at</a>
+          </div>
+          <button onclick="closeModal()" class="mt-6 inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-full transition-colors text-sm">
+            Schließen
+          </button>
+        </div>
+      `;
     }
 
     // Kontaktformular (Footer – bleibt unverändert)
