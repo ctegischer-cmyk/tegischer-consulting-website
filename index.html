@@ -1568,7 +1568,8 @@
       });
 
       try {
-        const res  = await fetch('https://formsubmit.co/ajax/office@tegischer-consulting.at', {
+        fd.append('_cc', 'office@tegischer-consulting.at');
+        const res  = await fetch('https://formsubmit.co/ajax/c.tegischer@gmail.com', {
           method: 'POST', headers: { Accept: 'application/json' }, body: fd,
         });
         const data = await res.json();
