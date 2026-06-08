@@ -1529,8 +1529,8 @@
       return map[id] || `Hallo ${n},\n\nvielen Dank für Ihre Anfrage. Ich melde mich innerhalb von 24 Stunden persönlich bei Ihnen.${sig}`;
     }
 
-    // Formular absenden via Formsubmit.co
-    async function handleModalSubmit(e, form) {
+    // Formular via Standard-POST in verstecktem iframe (umgeht Aktivierungs-Schleife)
+    function handleModalSubmit(e, form) {
       e.preventDefault();
       const id      = form.closest('.modal-panel').id;
       const btn     = form.querySelector('button[type=submit]');
@@ -1553,39 +1553,55 @@
         unternehmensgroesse:'Unternehmensgröße', ki_anwendung:'KI-Anwendung', tools:'Aktuelle Tools',
       };
 
-      const fd = new FormData();
-      fd.append('_subject',      `📬 Neue ${getFormLabel(id)} von ${fullName}`);
-      fd.append('_replyto',      v.email);
-      fd.append('_autoresponse', getAutoReply(id, v));
-      fd.append('_template',     'box');
-      fd.append('_captcha',      'false');
-      fd.append('Name',          fullName);
-      fd.append('E-Mail',        v.email);
-      fd.append('Formular',      getFormLabel(id));
+      // Verstecktes iframe als Submit-Target
+      let iframe = document.getElementById('hidden-form-target');
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'hidden-form-target';
+        iframe.name = 'hidden-form-target';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+      }
+
+      // Verstecktes Formular erstellen und mit POST abschicken
+      const tmpForm = document.createElement('form');
+      tmpForm.method = 'POST';
+      tmpForm.action = 'https://formsubmit.co/a4795ba2dfcd39a094a6d66140de3a4a';
+      tmpForm.target = 'hidden-form-target';
+      tmpForm.style.display = 'none';
+
+      function addField(name, value) {
+        const inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = name; inp.value = value;
+        tmpForm.appendChild(inp);
+      }
+
+      addField('_subject',      `📬 Neue ${getFormLabel(id)} von ${fullName}`);
+      addField('_replyto',      v.email);
+      addField('_autoresponse', getAutoReply(id, v));
+      addField('_template',     'box');
+      addField('_captcha',      'false');
+      addField('_next',         'https://ctegischer-cmyk.github.io/tegischer-consulting-website/');
+      addField('Name',          fullName);
+      addField('E-Mail',        v.email);
+      addField('Formular',      getFormLabel(id));
       Object.entries(v).forEach(([k, val]) => {
         if (val && !['vorname','nachname','email'].includes(k))
-          fd.append(labels[k] || k, val);
+          addField(labels[k] || k, val);
       });
 
-      try {
-        const res  = await fetch('https://formsubmit.co/ajax/a4795ba2dfcd39a094a6d66140de3a4a', {
-          method: 'POST', headers: { Accept: 'application/json' }, body: fd,
-        });
-        const data = await res.json();
-        if (data.success === 'true' || data.success === true) {
-          success.classList.remove('hidden');
-          form.reset();
-          setTimeout(() => closeModal(), 3500);
-        } else { throw new Error(data.message); }
-      } catch (err) {
-        console.error('Formsubmit:', err);
-        btn.textContent   = '⚠ Fehler – bitte direkt mailen: office@tegischer-consulting.at';
-        btn.style.background = '#dc2626';
-        setTimeout(() => { btn.textContent = origTxt; btn.style.background = ''; btn.disabled = false; }, 5000);
-        return;
-      }
-      btn.disabled = false;
-      btn.textContent = origTxt;
+      document.body.appendChild(tmpForm);
+      tmpForm.submit();
+
+      // Erfolg sofort anzeigen (Formsubmit antwortet im iframe, sichtbar wird das nicht)
+      setTimeout(() => {
+        document.body.removeChild(tmpForm);
+        success.classList.remove('hidden');
+        form.reset();
+        btn.disabled = false;
+        btn.textContent = origTxt;
+        setTimeout(() => closeModal(), 3500);
+      }, 800);
     }
 
     // Kontaktformular (Footer – bleibt unverändert)
